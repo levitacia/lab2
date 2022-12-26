@@ -88,7 +88,7 @@ Date: Sat, 24 Dec 2022 13:42:26 GMT
 Keep-Alive: timeout=5, max=99
 Server: Apache/2.4.54 (Win64) OpenSSL/1.1.1o PHP/7.4.30
 
-**Добавление комментариев(comment.php)**
+**Добавление комментариев: **
 ```
 include_once("template/settings.php");
 
