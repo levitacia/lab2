@@ -47,7 +47,7 @@
 | **post_id** | INT  | NO | Идентификатор поста |
 
 
-#### 5. [Алгоритмы]
+#### 5. Алгоритмы
 ![Алгоритм](https://user-images.githubusercontent.com/90519017/209438095-cd5a71fb-72ff-4834-bd4d-a3a8860aed1f.png)
 
 
@@ -105,38 +105,56 @@ header('Location: index.php');
 exit();
 
 ```
-**Поставить лайк/дизлайк/смайлик (reaction.php)**
+**Код получение комментария и записи его в базу данных:**
 ```
-include_once("template/settings.php");
-
-if(isset($_POST['like']))
-{
-    $id_like = $_POST['like'];
-    $sql = mysqli_query($db, 'UPDATE posts SET likes = likes + 1 WHERE id = '.$id_like.'');
-    header('Location: index.php');
-    exit();
-}
-if(isset($_POST['dislike']))
-{
-    $id_dislike = $_POST['dislike'];
-    $sql = mysqli_query($db, 'UPDATE posts SET dislikes = dislikes + 1 WHERE id = '.$id_dislike.'');
-    header('Location: index.php');
-    exit();
-}
-if(isset($_POST['funs']))
-{
-    $id_funs = $_POST['funs'];
-    $sql = mysqli_query($db, 'UPDATE posts SET funs = funs + 1 WHERE id = '.$id_funs.'');
-    header('Location: index.php');
-    exit();
-}
-header('Location: index.php');
-exit();
+if (isset($_POST["text"])) {	
+		$text = $_POST["text"];
+		$time = time();
+		$post_id = $_POST["post_id"];
+		$page = $_POST["forum_page"];
+	
+		if (strlen($text) > 1000) {
+			header("Location: http://localhost/forum.php?message=Слишком длинный текст");
+			exit();
+		}
+		
+		if (strlen($text) < 4) {
+			header("Location: http://localhost/forum.php?message=Слишком короткий текст");
+			exit();
+		}
+	
+		$sql = "INSERT INTO `comments` (`id`, `text`, `post_id`, `time`) VALUES (NULL, '".$text."', '".$post_id."', '".$time."');";
+		$link = mysqli_connect("localhost", "root", "", "posts");
+		mysqli_set_charset($link, "utf8");
+		$res = mysqli_query($link, $sql);
+	
+		header("Location: http://localhost/forum.php?page=".$page);
+		exit();
+	}
 
 ```
 
-**Подключение базы данных (template/settings.php)**
+**Код раскрывающихся комментариев:**
 ```
-require_once 'pdoconfig.php';
-$db = mysqli_connect ($host, $username, $password, $dbname);
+<script> 
+	function show_comments(id){
+		let c = document.getElementById("c"+id);
+		c.removeAttribute("hidden");
+		
+		let b = document.getElementById("b"+id);
+		b.textContent = "Скрыть комментарии";
+		
+		b.setAttribute("onClick", "hide_comments('"+id+"')");
+	}
+	
+	function hide_comments(id) {
+		let c = document.getElementById("c"+id);
+		c.setAttribute("hidden", true);
+		
+		let b = document.getElementById("b"+id);
+		b.textContent = "Показать комментарии";
+		
+		b.setAttribute("onClick", "show_comments('"+id+"')");
+	}
+</script>
 ```
